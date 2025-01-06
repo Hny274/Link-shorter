@@ -31,7 +31,7 @@ const Login = () => {
           ></input>
         </div>
         <Link
-          to="/forgot-password"
+          to="/forget-password"
           className="text-sky-500 mt-4 mb-3 flex justify-end"
         >
           Forgot Password?
