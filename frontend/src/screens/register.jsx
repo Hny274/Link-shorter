@@ -1,6 +1,28 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { BACKEND_LINK } from "../utils/base-api";
 
 const Register = () => {
+  const [data, setData] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
+
+  const RegisterHandler = async () => {
+    try {
+      const resp = await axios.post(`${BACKEND_LINK}/auth/register`, data);
+      toast.dismiss();
+      toast.success(resp.data.message);
+      console.log(resp.data.data);
+      navigate("/login");
+    } catch (error) {
+      toast.dismiss();
+      if (error.response) toast.error(error.response?.data?.message);
+      else toast.error("something went wrong!");
+      console.log("register error!", error);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col justify-center item-center h-screen ">
       <form
@@ -16,21 +38,28 @@ const Register = () => {
             type="text"
             name="email"
             id="email"
+            value={data.email}
             placeholder="Email ID"
             className="px-3 py-2 rounded-lg bg-transparent border border-white/20 "
+            onChange={(e) => setData({ ...data, email: e.target.value })}
           ></input>
         </div>
         <div className="flex flex-col ">
           <label className="text-xl py-2 ">Password</label>
           <input
-            type="text"
+            type="password"
             name="password"
             id="password"
+            value={data.password}
             placeholder="Password"
             className="px-3 py-2 rounded-lg bg-transparent border border-white/20"
+            onChange={(e) => setData({ ...data, password: e.target.value })}
           ></input>
         </div>
-        <button className="px-4 py-2 mt-4 mx-auto rounded-lg bg-sky-500 ">
+        <button
+          className="px-4 py-2 mt-4 mx-auto rounded-lg bg-sky-500 "
+          onClick={RegisterHandler}
+        >
           Register Now!
         </button>
         <Link to="/login" className="mx-auto mt-4 mb-3">

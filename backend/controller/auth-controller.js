@@ -13,12 +13,33 @@ const generateToken = (user, expiry) => {
 
 export const Register = async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Email and password are required."));
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res
+        .status(409)
+        .json(new ApiResponse(409, null, "Email already in use."));
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ email, password: hashedPassword });
+
     const token = generateToken(user, "7d");
     res
       .status(201)
       .json(
-        new ApiResponse(201, { user, token }, "User Registered successfully!")
+        new ApiResponse(
+          201,
+          { ...user.toJSON(), token },
+          "User Registered successfully!"
+        )
       );
   } catch (error) {
     res.status(500).json(new ApiResponse(500, null, error.message));
@@ -29,11 +50,26 @@ export const Login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user || !(await user.isPasswordCorrect(password))) {
+    if (!user) {
       return res
         .status(401)
         .json(new ApiResponse(401, null, "Invalid Credentials"));
     }
+
+    // Log hashed password and provided password for debugging
+    console.log("Hashed Password:", user.password);
+    console.log("Provided Password:", password);
+
+    // Verify password
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    console.log("Password Match:", isPasswordCorrect);
+
+    if (!isPasswordCorrect) {
+      return res
+        .status(401)
+        .json(new ApiResponse(401, null, "Invalid Credentials"));
+    }
+
     const token = generateToken(user, "7d");
     const data = {
       _id: user._id,
