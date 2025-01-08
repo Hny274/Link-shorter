@@ -85,7 +85,7 @@ export const Login = async (req, res) => {
   }
 };
 
-export const ForgotPassword = async (req, res) => {
+export const ForgetPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -109,12 +109,15 @@ export const ForgotPassword = async (req, res) => {
 };
 
 export const UpdatePassword = async (req, res) => {
-  const { token, password } = req.body;
+  const { password } = req.body;
+  const { token } = req.query;
+  console.log(password);
+  console.log(token);
   try {
     if (!token) {
       return res
         .status(404)
-        .json(new ApiResponse(404, null, "Token not found"));
+        .json(new ApiResponse(400, null, "Token is required!"));
     }
     const resetTokenData = await ResetToken.findById(token);
     if (!resetTokenData) {
@@ -128,8 +131,10 @@ export const UpdatePassword = async (req, res) => {
         process.env.JWT_SECRET
       );
       const hashedPassword = await bcrypt.hash(password, 10);
+
       await User.findByIdAndUpdate(tokenData.id, { password: hashedPassword });
-      await ResetToken.findByIdAndDelete(token);
+
+      await ResetToken.findByIdAndDelete(resetTokenData._id);
       return res
         .status(200)
         .json(new ApiResponse(200, null, "Password updated successfully"));
