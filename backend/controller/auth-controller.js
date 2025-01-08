@@ -28,8 +28,9 @@ export const Register = async (req, res) => {
         .json(new ApiResponse(409, null, "Email already in use."));
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashedPassword });
+    //const hashedPassword = await bcrypt.hash(password, 10);
+    //const user = await User.create({ email, password: hashedPassword });
+    const user = await User.create(req.body);
 
     const token = generateToken(user, "7d");
     res
@@ -53,14 +54,12 @@ export const Login = async (req, res) => {
     if (!user) {
       return res
         .status(401)
-        .json(new ApiResponse(401, null, "Invalid Credentials"));
+        .json(new ApiResponse(404, null, "User not found!"));
     }
 
-    // Log hashed password and provided password for debugging
     console.log("Hashed Password:", user.password);
     console.log("Provided Password:", password);
 
-    // Verify password
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     console.log("Password Match:", isPasswordCorrect);
 
