@@ -1,4 +1,4 @@
-import Link from "./../model/link-model";
+import Link from "./../model/link-model.js";
 import ApiResponse from "../utils/Api-response.js";
 
 const generateUniqueId = () => {

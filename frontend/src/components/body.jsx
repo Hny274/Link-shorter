@@ -3,8 +3,10 @@ import { RouterProvider } from "react-router-dom";
 import Login from "../screens/login";
 import Register from "../screens/register";
 import Home from "../screens/home";
+import Dashboard from "../screens/dashboard";
 import ForgetPassword from "../screens/forget-password";
 import UpdatePassword from "../screens/update-password";
+import Navbar from "./navbar";
 
 const Body = () => {
   const appRouter = createBrowserRouter([
@@ -28,9 +30,13 @@ const Body = () => {
       path: "/update-password",
       element: <UpdatePassword />,
     },
+    {
+      path: "/dashboard",
+      element: <Dashboard />,
+    },
   ]);
   return (
-    <div>
+    <div className="bg-[#191e24]">
       <RouterProvider router={appRouter} />
     </div>
   );

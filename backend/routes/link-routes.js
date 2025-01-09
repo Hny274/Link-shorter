@@ -1,4 +1,4 @@
-import { AddLink } from "../controller/link-controller";
+import { AddLink } from "../controller/link-controller.js";
 import express from "express";
 
 const router = express.Router();

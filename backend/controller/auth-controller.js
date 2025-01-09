@@ -143,7 +143,44 @@ export const UpdatePassword = async (req, res) => {
       return res.status(401).json(new ApiResponse(401, null, "Invalid Token"));
     }
   } catch (error) {
-    return re
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Internal Server Error"));
+  }
+};
+
+export const GetUserDetails = async (req, res) => {
+  try {
+    //console.log(req.headers.authorization);
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json(
+          new ApiResponse(401, null, "Unauthorized:Missing or invalid token")
+        );
+    }
+    const token = authorizationHeader.split(" ")[1];
+    try {
+      const verify_token = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(verify_token.id).select("-password");
+      if (!user) {
+        return res
+          .status(404)
+          .json(new ApiResponse(404, null, "User not found"));
+      }
+      return res
+        .status(200)
+        .json(new ApiResponse(200, user, "User retrieved successfully"));
+    } catch (error) {
+      console.error("Error decoding token:", err.message);
+      return res
+        .status(401)
+        .json(new ApiResponse(401, null, "Unauthorized: Invalid token"));
+    }
+  } catch (error) {
+    //console.log(error.message);
+    return res
       .status(500)
       .json(new ApiResponse(500, null, "Internal Server Error"));
   }
