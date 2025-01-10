@@ -36,7 +36,7 @@ const Body = () => {
     },
   ]);
   return (
-    <div className="bg-[#191e24]">
+    <div className="bg-[#1d232a]">
       <RouterProvider router={appRouter} />
     </div>
   );
