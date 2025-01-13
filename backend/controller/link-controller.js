@@ -61,16 +61,33 @@ export const GetAllLinks = async (req, res) => {
     }
 
     const links = await Link.find({ user: userId }).sort({ createdAt: -1 });
-    if (!links || links.length === 0) {
-      return res
-        .status(404)
-        .json(new ApiResponse(404, null, "Links not found!"));
-    }
+    // if (!links || links.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json(new ApiResponse(404, null, "Links not found!"));
+    // }
 
     return res.status(200).json(new ApiResponse(200, links, "Links found!"));
   } catch (error) {
     console.log(error.message);
     return res.status(500).json(new ApiResponse(500, null, error.message));
+  }
+};
+
+export const UpdateAnalytics = async (req, res) => {
+  try {
+    const { uniqueId } = req.params;
+    const updatedLink = await Link.findOneAndUpdate(
+      { uniqueId },
+      { $inc: { clicks: 1 } },
+      { new: true }
+    );
+    if (!updatedLink) {
+      return res.status(404).json(new ApiResponse(404, {}, "Link Not Found!"));
+    }
+    res.status(200).json(new ApiResponse(200, updatedLink, "Link Updated!"));
+  } catch (error) {
+    res.status(500).json(new ApiResponse(500, null, error.message));
   }
 };
 

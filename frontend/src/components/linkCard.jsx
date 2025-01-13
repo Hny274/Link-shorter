@@ -1,11 +1,35 @@
 import React from "react";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { BACKEND_LINK } from "../utils/base-api";
+import toast from "react-hot-toast";
+import axios from "axios";
 
-const LinkCard = ({ title, uniqueId, longUrl, clicks, flag }) => {
-  const deleteHandler = () => {};
+const LinkCard = ({ title, uniqueId, longurl, clicks, setFlag }) => {
+  const deleteHandler = async () => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this link?"
+    );
+    if (!isConfirmed) return;
+
+    try {
+      toast.loading("Deleting..");
+      const resp = await axios.delete(
+        `${BACKEND_LINK}/link/delete-link/${uniqueId}`
+      );
+      toast.dismiss();
+      toast.success(resp.data.message);
+      setFlag(Math.random());
+    } catch (error) {
+      toast.dismiss();
+      if (error.response) toast.error(error.response?.data?.message);
+      else toast.error("Something Went Wrong!");
+      console.log("Delete Error\n", error);
+    }
+  };
+
   return (
-    <div className="flex  w-[70%] bg-[#191e24] h-auto border rounded-xl border-white/30">
+    <div className="flex  w-[70%] bg-[#191e24] h-auto border rounded-xl border-white/30 mb-3">
       <div className="flex flex-col m-2 w-[80%]">
         <h1 className="py-2 px-3 font-semibold text-xl text-white">
           Title : {title}
@@ -19,12 +43,12 @@ const LinkCard = ({ title, uniqueId, longUrl, clicks, flag }) => {
           {import.meta.env.VITE_FRONTEND_LINK + "/" + uniqueId}
         </Link>
         <Link
-          to={longUrl}
+          to={longurl}
           target="_blank"
           className="py-2 px-3 cursor-pointer font-semibold text-xl text-sky-500"
         >
           <span className="text-white"> Long Url : </span>
-          {longUrl}
+          {longurl}
         </Link>
       </div>
       <div className="flex flex-col justify-center items-center w-[10%] ">

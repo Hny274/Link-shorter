@@ -5,14 +5,22 @@ import { BACKEND_LINK } from "../utils/base-api";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { UserContext } from "../context/user-context";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [linkData, setLinkData] = useState({ title: "", link: "" });
   const isDisabled = !linkData.link || !linkData.title;
   const { user } = useContext(UserContext);
   const [generatedLink, setGeneratedLink] = useState(null);
+  const navigate = useNavigate();
 
   const ShortLink = async () => {
+    if (!user?.email) {
+      navigate("/login");
+      toast.error("Login First!");
+      return;
+    }
+    toast.loading("Shorting the URL..");
     try {
       const resp = await axios.post(`${BACKEND_LINK}/link/add-link`, {
         user: user._id,

@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { BACKEND_LINK } from "../utils/base-api";
 import Navbar from "../components/navbar";
+import { UserContext } from "../context/user-context";
 
 const Register = () => {
   const [data, setData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (user && user.email) navigate("/");
+  }, [navigate, user]);
 
   const RegisterHandler = async () => {
     try {

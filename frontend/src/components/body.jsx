@@ -7,6 +7,7 @@ import Dashboard from "../screens/dashboard";
 import ForgetPassword from "../screens/forget-password";
 import UpdatePassword from "../screens/update-password";
 import Navbar from "./navbar";
+import LinkRedirect from "../screens/link";
 
 const Body = () => {
   const appRouter = createBrowserRouter([
@@ -33,6 +34,10 @@ const Body = () => {
     {
       path: "/dashboard",
       element: <Dashboard />,
+    },
+    {
+      path: "/:uniqueId",
+      element: <LinkRedirect />,
     },
   ]);
   return (
